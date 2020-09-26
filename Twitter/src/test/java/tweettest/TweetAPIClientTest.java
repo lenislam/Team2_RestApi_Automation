@@ -29,7 +29,20 @@ public class TweetAPIClientTest {
         String actualTweet= response.extract().body().path("text");
         Assert.assertEquals(tweet,actualTweet);
     }
-    @Test(enabled = false)
+
+    /**
+     * Create tweet with invalid end point
+     */
+    @Test(enabled = true)
+    public void testUserCreateTweetWithInvalidEndPoint(){
+        ValidatableResponse response=this.tweetAPIClient.createTweetWithEndPoint();
+        response.statusCode(404);
+//        String expectedMessage = "Status is wrong end point";
+//        String actualMessage = response.extract().body().path("message");
+//        Assert.assertEquals(actualMessage, expectedMessage);
+         Assert.assertNotSame(200,404);
+    }
+    @Test(enabled = true)
     public void testUserCanNotTweetTheSameTweetTwiceInARow(){
         // 1. user send a tweet
        // String tweet="We are learning RestAPI Automation and Tweet check"+ UUID.randomUUID().toString();
@@ -101,7 +114,7 @@ public void testUnReTweet(){
         Assert.assertEquals(404,actualUnRetweet);
     }
     /**
-     * Favorites Tweet create (Like)
+     * Favorites Tweet create valid data
      */
     @Test(enabled = true)
     public void FavoritesTweetID(){
@@ -112,10 +125,19 @@ public void testUnReTweet(){
         Assert.assertEquals(tweet,actualTweet);
     }
     /**
-     * Favorites Tweet destroy (unLike)
+     * Favorites with invalid data
+     */
+    @Test
+    public void TestCreateTweetWithWrongFavoritesEndPoint(){
+        ValidatableResponse response = tweetAPIClient.favoritesTweetWithWrongFavoritesEndPoint(1308874571995664386L);
+        int actualCode = response.extract().statusCode();
+        Assert.assertEquals(404, actualCode);
+    }
+    /**
+     * Favorites Tweet destroy valid data
      */
     @Test(enabled = true)
-    public void unLikeFavoritesTweet(){
+    public void testDestroyFavoritesTweet(){
         String tweet="Check user ID042a5d91-b156-4b9d-9dfa-ca94b5638801";
         ValidatableResponse response=this.tweetAPIClient.unlikeFavoritesTweet(1308874571995664386L);
         response.statusCode(200);
@@ -123,26 +145,56 @@ public void testUnReTweet(){
         Assert.assertEquals(tweet,actualTweet);
     }
     /**
-     * Favorites with invalid data
+     * Favorites Tweet destroy invalid data
      */
-    @Test
-    public void TestCreateTweetWithWrongFavoritesEndPoint(){
-        String tweet = "Check user ID042a5d91-b156-4b9d-9dfa-ca94b5638801";
-        ValidatableResponse response = tweetAPIClient.favoritesTweetWithWrongFavoritesEndPoint(1308874571995664386L);
+    @Test(enabled = true)
+    public void testDestroyFavoritesTweetWithInvalidData(){
+        String tweet="Check user ID042a5d91-b156-4b9d-9dfa-ca94b5638801";
+        ValidatableResponse response=this.tweetAPIClient.unlikeFavoritesTweet(1308874571995664L);
         int actualCode = response.extract().statusCode();
         Assert.assertEquals(404, actualCode);
     }
     /**
-     * Show tweet id with valid data
+     * Favorites list with valid data
+     */
+    @Test(enabled = true)
+    public void testFavoritesListTweet(){
+        ValidatableResponse response=this.tweetAPIClient.favoritesListTweet("Shohel41710088");
+        int actualCode = response.extract().statusCode();
+        System.out.println(response.extract().body().asString());
+        Assert.assertEquals(200,actualCode);
+    }
+    /**
+     * Favorites list with invalid data
+     */
+    @Test(enabled = true)
+    public void testFavoritesListWithInvalidTweet(){
+        ValidatableResponse response=this.tweetAPIClient.favoritesListWithInvalidTweet("Shohel41710088");
+        int actualCode = response.extract().statusCode();
+        System.out.println(response.extract().body().asString());
+        Assert.assertEquals(404,actualCode);
+    }
+    /**
+     * Show tweet with valid data
      */
     @Test(enabled = true)
     public void testShowTweetID(){
         String tweet="Today is cloudy.";
-        ValidatableResponse response=this.tweetAPIClient.showTweetID(1309196682865840128l);
+        ValidatableResponse response=this.tweetAPIClient.showTweetIDWithValidData(1309196682865840128l);
         response.statusCode(200);
         System.out.println(response.extract().body().asString());
         String actualTweet=response.extract().body().path("text");
         Assert.assertEquals(tweet,actualTweet);
+    }
+    /**
+     * Show tweet with invalid data
+     */
+    @Test(enabled = true)
+    public void testShowTweetIDWithInvalidData(){
+        ValidatableResponse response=this.tweetAPIClient.showTweetIDWithInvalidData(1309196682865840000l);
+        System.out.println(response.extract().body().asString());
+        int actualCode = response.extract().statusCode();
+        Assert.assertEquals(404, actualCode);
     }
 
     /**
@@ -166,25 +218,8 @@ public void testUnReTweet(){
         Assert.assertEquals(404,actualResult);
     }
     /**
-     * Favorites list with valid data
+     * Get Status Retweets
      */
-    @Test(enabled = true)
-    public void testFavoritesListTweet(){
-        ValidatableResponse response=this.tweetAPIClient.favoritesListTweet("Shohel41710088");
-        int actualCode = response.extract().statusCode();
-        System.out.println(response.extract().body().asString());
-        Assert.assertEquals(200,actualCode);
-    }
-    /**
-     * Favorites list with invalid data
-     */
-    @Test(enabled = true)
-    public void testFavoritesListWithInvalidTweet(){
-        ValidatableResponse response=this.tweetAPIClient.favoritesListWithInvalidTweet("Shohel41710088");
-        int actualCode = response.extract().statusCode();
-        System.out.println(response.extract().body().asString());
-        Assert.assertEquals(404,actualCode);
-    }
     @Test(enabled = true)
     public void testGetRetweets(){
         String tweet="Nearly 130 people were arrested Wednesday in Louisville protests over the Breonna Taylor case, the city's interim police chief says";
@@ -193,12 +228,35 @@ public void testUnReTweet(){
         String actualTweet=response.extract().body().path("text");
         Assert.assertEquals(tweet,actualTweet);
     }
+    /**
+     * Home time line with valid data
+     */
     @Test(enabled = true)
     public void testGetHomeTimeLineTweets(){
         ValidatableResponse response=this.tweetAPIClient.getHomeTimeLineTweet("Shohel41710088");
         int actualCode = response.extract().statusCode();
         String actualTweet=response.extract().body().path("text");
         Assert.assertEquals(200,actualCode);
+    }
+    /**
+     * GET All Tweet Information with valid data
+     */
+    @Test
+    public void testGetUserTimeTweetWithValidData(){
+        ValidatableResponse response = this.tweetAPIClient.getUserTimeTweetWithValidData(10,"Shohel41710088");
+        int actualCode = response.extract().statusCode();
+        System.out.println(actualCode);
+        Assert.assertEquals(200,actualCode);
+    }
+    /**
+     * GET All Tweet Information with invalid end point
+     */
+    @Test
+    public void testGetUserTimeTweetWithInValidData(){
+        ValidatableResponse response = this.tweetAPIClient.getUserTimeTweetWithInvalidPoint(0,"Shohel41710088");
+        int actualCode = response.extract().statusCode();
+        System.out.println(actualCode);
+        Assert.assertEquals(404,actualCode);
     }
 
 
