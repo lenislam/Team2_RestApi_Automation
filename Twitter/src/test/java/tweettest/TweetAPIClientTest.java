@@ -29,7 +29,6 @@ public class TweetAPIClientTest {
         String actualTweet= response.extract().body().path("text");
         Assert.assertEquals(tweet,actualTweet);
     }
-
     /**
      * Create tweet with invalid end point
      */
@@ -257,6 +256,16 @@ public void testUnReTweet(){
         int actualCode = response.extract().statusCode();
         System.out.println(actualCode);
         Assert.assertEquals(404,actualCode);
+    }
+    /**
+     * Get collections entries
+     */
+    @Test(enabled = true)
+    public void testGetCollectionsEntriesTweets(){
+        ValidatableResponse response=this.tweetAPIClient.getEntriesCollectionsTweet("custom-1309755845689868288");
+        int actualCode=response.extract().statusCode();
+        System.out.println(actualCode);
+        Assert.assertEquals(200,actualCode);
     }
 
 

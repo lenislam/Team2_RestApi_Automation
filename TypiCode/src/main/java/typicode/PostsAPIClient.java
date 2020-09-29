@@ -19,6 +19,11 @@ public class PostsAPIClient extends TypiCodeAPIClient {
         return given().header("Content-type","application/json").body(json)
                 .when().post(this.baseUrl+POST_ENDPOINT).then();
     }
+    public ValidatableResponse createPost1(Object json) {
+        return given().header("Content-type", "application/json; charset=UTF-8").body(json)
+                .when().post(this.baseUrl + POST_ENDPOINT).then();
+    }
+
 
 
 
